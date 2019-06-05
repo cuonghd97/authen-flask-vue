@@ -8,12 +8,13 @@ from flask_jwt_extended import (
     jwt_required,
     jwt_refresh_token_required,
     get_jwt_identity,
-    get_raw_jwt
+    get_raw_jwt,
 )
 from flask import request, send_from_directory
 from werkzeug.utils import secure_filename
 
 from models.user import UserModel
+from models.revoke import RevokedTokenModel
 import error.error as error
 from config import Config
 
@@ -22,10 +23,8 @@ parser = reqparse.RequestParser()
 
 class UserRegister(Resource):
     def post(self):
-        parser.add_argument(
-            "username", help="Username can not be none", required=True)
-        parser.add_argument(
-            "password", help="Password can not be none", required=True)
+        parser.add_argument("username", help="Username can not be none", required=True)
+        parser.add_argument("password", help="Password can not be none", required=True)
 
         postData = parser.parse_args()
 
@@ -34,7 +33,7 @@ class UserRegister(Resource):
 
         new_user = UserModel(
             username=postData["username"],
-            password=UserModel.hash_pass(postData["password"])
+            password=UserModel.hash_pass(postData["password"]),
         )
 
         try:
@@ -45,7 +44,7 @@ class UserRegister(Resource):
             return {
                 "message": "Register success",
                 "access_token": access_token,
-                "refresh_token": refresh_token
+                "refresh_token": refresh_token,
             }
         except Exception as e:
             print(e)
@@ -54,10 +53,8 @@ class UserRegister(Resource):
 
 class UserLogin(Resource):
     def post(self):
-        parser.add_argument(
-            "username", help="Username can not be none", required=True)
-        parser.add_argument(
-            "password", help="Password can not be none", required=True)
+        parser.add_argument("username", help="Username can not be none", required=True)
+        parser.add_argument("password", help="Password can not be none", required=True)
 
         postData = parser.parse_args()
 
@@ -75,8 +72,9 @@ class UserLogin(Resource):
         return {
             "message": "Login success",
             "access_token": access_token,
-            "refresh_token": refresh_token
+            "refresh_token": refresh_token,
         }
+
 
 class UserProfile(Resource):
     @jwt_required
@@ -104,3 +102,39 @@ class UserProfile(Resource):
         UserModel.update(path=path, user=user)
         print(user)
         return {"message": "upload"}
+
+
+    @jwt_required
+    def get(self):
+        username = get_jwt_identity()
+        return UserModel.get_one_user(str(username))
+
+
+class LogoutAccess(Resource):
+    @jwt_required
+    def post(self):
+        jti = get_raw_jwt()["jti"]
+        try:
+            revoked_token = RevokedTokenModel(jti=jti)
+            revoked_token.add()
+
+            return {"message": "Token has been revoked"}
+        except Exception as e:
+            print(e)
+
+            return {"message": "Something went wrong"}
+
+
+class LogoutRefresh(Resource):
+    @jwt_refresh_token_required
+    def post(self):
+        jti = get_raw_jwt()["jti"]
+        try:
+            revoked_token = RevokedTokenModel(jti=jti)
+            revoked_token.add()
+
+            return {"message": "Refresh token has been revoked"}
+        except Exception as e:
+            print(e)
+
+            return {"message": "Some thing went wrong"}

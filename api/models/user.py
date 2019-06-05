@@ -32,3 +32,15 @@ class UserModel(db.Model):
     def update(cls, **kwargs):
         print(kwargs.items())
         return {"message": "update"}
+
+    @classmethod
+    def get_one_user(cls, username):
+        def to_json(item):
+            return {
+                "id": item.id,
+                "fullname": item.fullname
+            }
+
+        user = cls.query.filter_by(username=username).first()
+
+        return {"user": to_json(user)}
