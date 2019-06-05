@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_jwt_extended import JWTManager
 from flask_restful import Api
+from flask_cors import CORS
 
 from db import db
 from resources.user import *
@@ -9,6 +10,7 @@ from config import Config
 from models.revoke import RevokedTokenModel
 
 app = Flask(__name__)
+CORS(app)
 app.config.from_object(Config)
 jwt = JWTManager(app)
 api = Api(app)
