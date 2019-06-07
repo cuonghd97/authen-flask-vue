@@ -3,7 +3,10 @@ import App from './App.vue'
 import router from './router'
 import Axios from 'axios'
 
-Vue.prototype.$http = Axios
+
+// const token = localStorage.getItem("jwt");
+// Axios.defaults.headers.common["Authorization"] = `Bearer ${token}`
+// Vue.prototype.$http = Axios
 
 Vue.config.productionTip = false
 

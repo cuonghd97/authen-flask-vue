@@ -16,35 +16,37 @@
   </form>
 </template>
 <script>
+import Axios from "axios";
+
 export default {
   data: function() {
     return {
       username: "",
       password: ""
-    }
+    };
   },
   methods: {
     handleSubmit: function(e) {
-      e.preventDefault()
-      const url = "http://localhost:5000/login"
+      e.preventDefault();
+      const url = "http://localhost:5000/login";
       if (this.username && this.password) {
-        this.$http.post(url, {
+        Axios.post(url, {
           username: this.username,
           password: this.password
         })
-        .then((res) => {
-          console.log(res)
-          localStorage.setItem("jwt", res.data.access_token)
-          this.$emit("loggedIn")
-          if (localStorage.getItem("jwt") !== null) {
-            this.$router.push("dashboard")
-          }
-        })
-        .catch(function(err) {
-          console.error(err)
-        })
+          .then(res => {
+            console.log(res);
+            localStorage.setItem("jwt", res.data.access_token);
+            this.$emit("loggedIn");
+            if (localStorage.getItem("jwt") !== null) {
+              this.$router.push("dashboard");
+            }
+          })
+          .catch(function(err) {
+            console.error(err);
+          });
       }
     }
   }
-}
+};
 </script>

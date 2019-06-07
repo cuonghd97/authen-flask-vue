@@ -4,6 +4,8 @@ import Register from "@/components/Register"
 import Login from "@/components/Login"
 import Dashboard from "@/components/Dashboard"
 
+import Axios from "axios"
+
 Vue.use(Router)
 
 let router = new Router({

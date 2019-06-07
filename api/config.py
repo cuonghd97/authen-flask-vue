@@ -3,6 +3,7 @@ import datetime
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
+
 class Config(object):
     SECRET_KEY = "cc"
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'data.db')
@@ -12,7 +13,6 @@ class Config(object):
     JWT_BLACKLIST_TOKEN_CHECKS = ["access", "refresh"]
     MAX_CONTENT_LENGTH = 10 * 1024 * 1024
     JWT_ACCESS_TOKEN_EXPIRES = datetime.timedelta(hours=24)
-
 
     APP_ROOT = os.path.dirname(os.path.abspath(__file__))
     Folder = os.path.join(APP_ROOT, "{}".format("upload"))

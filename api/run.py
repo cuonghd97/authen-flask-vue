@@ -26,6 +26,7 @@ def check_token_revoked(decrypted_token):
     jti = decrypted_token['jti']
     return RevokedTokenModel.is_revoked(jti)
 
+
 # User
 api.add_resource(UserRegister, "/register")
 api.add_resource(UserLogin, "/login")

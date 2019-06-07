@@ -21,6 +21,8 @@
   </form>
 </template>
 <script>
+import Axios from "axios"
+
 export default {
   props: ["nextUrl"],
   data: function() {
@@ -35,7 +37,7 @@ export default {
       e.preventDefault();
       const url = "http://localhost:5000/register";
       if (this.fullname && this.username && this.password) {
-        this.$http
+        Axios
           .post(url, {
             fullname: this.fullname,
             username: this.username,

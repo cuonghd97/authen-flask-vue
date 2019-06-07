@@ -4,14 +4,15 @@ from flask_restful import Resource, reqparse
 from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
-    jwt_manager,
+    # jwt_manager,
     jwt_required,
     jwt_refresh_token_required,
     get_jwt_identity,
     get_raw_jwt,
 )
-from flask import request, send_from_directory
+from flask import request
 from werkzeug.utils import secure_filename
+# from flask_cors import cross_origin
 
 from models.user import UserModel
 from models.revoke import RevokedTokenModel
@@ -23,8 +24,16 @@ parser = reqparse.RequestParser()
 
 class UserRegister(Resource):
     def post(self):
-        parser.add_argument("username", help="Username can not be none", required=True)
-        parser.add_argument("password", help="Password can not be none", required=True)
+        parser.add_argument(
+            "username",
+            help="Username can not be none",
+            required=True
+        )
+        parser.add_argument(
+            "password",
+            help="Password can not be none",
+            required=True
+        )
 
         postData = parser.parse_args()
 
@@ -53,8 +62,16 @@ class UserRegister(Resource):
 
 class UserLogin(Resource):
     def post(self):
-        parser.add_argument("username", help="Username can not be none", required=True)
-        parser.add_argument("password", help="Password can not be none", required=True)
+        parser.add_argument(
+            "username",
+            help="Username can not be none",
+            required=True
+        )
+        parser.add_argument(
+            "password",
+            help="Password can not be none",
+            required=True
+        )
 
         postData = parser.parse_args()
 
@@ -63,7 +80,8 @@ class UserLogin(Resource):
         if not current_user:
             return error.DOES_NOT_EXIST
 
-        if not UserModel.check_pass(postData["password"], current_user.password):
+        if not UserModel.check_pass(postData["password"],
+                                    current_user.password):
             return error.WRONG_PASSWORD
 
         access_token = create_access_token(identity=current_user.username)
@@ -80,7 +98,7 @@ class UserProfile(Resource):
     @jwt_required
     def put(self):
         parser.add_argument("fullname")
-        postData = parser.parse_args()
+        # postData = parser.parse_args()
 
         current_user = get_jwt_identity()
 
@@ -103,11 +121,15 @@ class UserProfile(Resource):
         print(user)
         return {"message": "upload"}
 
-
     @jwt_required
     def get(self):
+        print(request.headers)
         username = get_jwt_identity()
         return UserModel.get_one_user(str(username))
+
+    @jwt_required
+    def post(self):
+        return {"message": "post"}
 
 
 class LogoutAccess(Resource):
